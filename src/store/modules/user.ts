@@ -5,12 +5,12 @@ import { ResultEnum } from '@/enums/httpEnum';
 
 import { getUserInfo as getUserInfoApi, login } from '@/api/system/user';
 import { storage } from '@/utils/Storage';
+import { UserInfo } from '@/api/system/types';
 
-export type UserInfoType = {
+export interface UserInfoType extends UserInfo {
   // TODO: add your own data
   username: string;
-  email: string;
-};
+}
 
 export interface IUserState {
   token: string;
@@ -21,8 +21,7 @@ export interface IUserState {
   info: UserInfoType;
 }
 
-export const useUserStore = defineStore({
-  id: 'app-user',
+export const useUserStore = defineStore('app-user', {
   state: (): IUserState => ({
     token: storage.get(ACCESS_TOKEN, ''),
     username: '',
@@ -63,26 +62,36 @@ export const useUserStore = defineStore({
     },
     // 登录
     async login(params: any) {
-      const response = await login(params);
+      const accessToken: string = await login(params);
+
+      console.log('login', accessToken);
+      const response = {
+        code: ResultEnum.SUCCESS,
+        message: 'success',
+        result: {
+          token: accessToken,
+        },
+      };
       const { result, code } = response;
       if (code === ResultEnum.SUCCESS) {
         const ex = 7 * 24 * 60 * 60;
         storage.set(ACCESS_TOKEN, result.token, ex);
-        storage.set(CURRENT_USER, result, ex);
+        // storage.set(CURRENT_USER, result, ex);
         storage.set(IS_SCREENLOCKED, false);
         this.setToken(result.token);
-        this.setUserInfo(result);
+        await this.getInfo();
       }
       return response;
     },
 
     // 获取用户信息
     async getInfo() {
-      const data = await getUserInfoApi();
-      const { result } = data;
-      if (result.permissions && result.permissions.length) {
-        const permissionsList = result.permissions;
+      const result = await getUserInfoApi();
+      console.log('getInfo', result);
+      if (result.menuList && result.menuList.length) {
+        const permissionsList = result.menuList;
         this.setPermissions(permissionsList);
+        storage.set(CURRENT_USER, result);
         this.setUserInfo(result);
       } else {
         throw new Error('getInfo: permissionsList must be a non-null array !');
@@ -94,7 +103,6 @@ export const useUserStore = defineStore({
     // 登出
     async logout() {
       this.setPermissions([]);
-      this.setUserInfo({ username: '', email: '' });
       storage.remove(ACCESS_TOKEN);
       storage.remove(CURRENT_USER);
     },

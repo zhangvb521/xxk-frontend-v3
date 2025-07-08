@@ -60,6 +60,7 @@ export const Alova = createAlova({
     // 添加 token 到请求头
     if (!method.meta?.ignoreToken && token) {
       method.config.headers['token'] = token;
+      method.config.headers['Authorization'] = token;
     }
     // 处理 api 请求前缀
     const isUrlStr = isUrl(method.url as string);
@@ -72,21 +73,21 @@ export const Alova = createAlova({
   },
   responded: {
     onSuccess: async (response, method) => {
-      const res = (response.json && (await response.json())) || response.body;
+      let res = response.body;
+      try {
+        res = response.json && (await response.json());
+      } catch (error) {
+        res = response.body;
+      }
 
       // 是否返回原生响应头 比如：需要获取响应头时使用该属性
       if (method.meta?.isReturnNativeResponse) {
         return res;
       }
       // 请根据自身情况修改数据结构
-      const { message, code, result } = res;
 
-      // 不进行任何处理，直接返回
-      // 用于需要直接获取 code、result、 message 这些信息时开启
-      if (method.meta?.isTransformResponse === false) {
-        return res.data;
-      }
-
+      // 请根据自身情况修改数据结构
+      const { message, code, result } = wrapResponse(res);
       // @ts-ignore
       const Message = window.$message;
       // @ts-ignore
@@ -97,7 +98,7 @@ export const Alova = createAlova({
         return result;
       }
       // 需要登录
-      if (code === 912) {
+      if (code === 511 || response.status === 511) {
         Modal?.warning({
           title: '提示',
           content: '登录身份已失效，请重新登录!',
@@ -117,7 +118,14 @@ export const Alova = createAlova({
     },
   },
 });
-
+function wrapResponse(res: any) {
+  const w = {
+    result: res,
+    code: ResultEnum.SUCCESS,
+    message: 200,
+  };
+  return w;
+}
 // 项目，多个不同 api 地址，可导出多个实例
 // export const AlovaTwo = createAlova({
 //   baseURL: 'http://localhost:9001',

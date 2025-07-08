@@ -12,8 +12,7 @@ export type IScreenLockState = {
   lockTime: number;
 };
 
-export const useScreenLockStore = defineStore({
-  id: 'app-screen-lock',
+export const useScreenLockStore = defineStore('app-screen-lock', {
   state: (): IScreenLockState => ({
     isLocked: isLocked === true, // 是否锁屏
     lockTime: isLocked == 'true' ? initTime : 0,

@@ -1,18 +1,13 @@
 <template>
   <div>
-    <div class="n-layout-page-header">
-      <n-card :bordered="false" title="角色权限管理">
-        页面数据为 Mock 示例数据，非真实数据。
-      </n-card>
-    </div>
     <n-card :bordered="false" class="mt-4 proCard">
       <BasicTable
         :columns="columns"
+        pagination
         :request="loadDataTable"
         :row-key="(row) => row.id"
         ref="actionRef"
         :actionColumn="actionColumn"
-        @update:checked-row-keys="onCheckedRow"
       >
         <template #tableTitle>
           <n-button type="primary" @click="addRole">
@@ -64,18 +59,18 @@
   </div>
 </template>
 
-<script lang="ts" setup>
-  import { reactive, ref, unref, h, onMounted } from 'vue';
-  import { useMessage } from 'naive-ui';
-  import { BasicTable, TableAction } from '@/components/Table';
+<script lang="tsx" setup>
+  import type { ListDate } from '@/api/system/menu';
   import { getRoleList } from '@/api/system/role';
-  import { getMenuList } from '@/api/system/menu';
-  import { columns } from './columns';
-  import { PlusOutlined } from '@vicons/antd';
+  import { Role, RoleFilterDto } from '@/api/system/types';
+  import { BasicTable, TableAction } from '@/components/Table';
   import { getTreeAll } from '@/utils';
+  import { PlusOutlined } from '@vicons/antd';
+  import { useMessage } from 'naive-ui';
+  import { onMounted, onUnmounted, reactive, ref, unref } from 'vue';
   import CreateModal from './CreateModal.vue';
   import EditModal from './EditModal.vue';
-  import type { ListDate } from '@/api/system/menu';
+  import { columns } from './columns';
 
   const message = useMessage();
   const actionRef = ref();
@@ -88,9 +83,10 @@
   const treeData = ref<ListDate[]>([]);
   const expandedKeys = ref<string[]>([]);
   const checkedKeys = ref<string[]>(['console', 'step-form']);
-
-  const params = reactive({
-    name: 'NaiveAdmin',
+  const params = reactive<RoleFilterDto>({
+    roleName: '',
+    pageNum: 1,
+    pageSize: 20,
   });
 
   const actionColumn = reactive({
@@ -98,40 +94,33 @@
     title: '操作',
     key: 'action',
     fixed: 'right',
-    render(record) {
-      return h(TableAction, {
-        style: 'button',
-        actions: [
-          {
-            label: '菜单权限',
-            onClick: handleMenuAuth.bind(null, record),
-            // 根据业务控制是否显示 isShow 和 auth 是并且关系
-            ifShow: () => {
-              return true;
-            },
-            // 根据权限控制是否显示: 有权限，会显示，支持多个
-            auth: ['basic_list'],
-          },
-          {
-            label: '编辑',
-            onClick: handleEdit.bind(null, record),
-            ifShow: () => {
-              return true;
-            },
-            auth: ['basic_list'],
-          },
-          {
-            label: '删除',
-            onClick: handleDelete.bind(null, record),
-            // 根据业务控制是否显示 isShow 和 auth 是并且关系
-            ifShow: () => {
-              return true;
-            },
-            // 根据权限控制是否显示: 有权限，会显示，支持多个
-            auth: ['basic_list'],
-          },
-        ],
-      });
+    render(record: Role) {
+      const actions = [
+        {
+          label: '菜单权限',
+          size: 'small',
+          type: 'primary',
+          quaternary: true,
+          onClick: handleMenuAuth.bind(null, record),
+        },
+        {
+          label: '编辑',
+          size: 'small',
+          type: 'success',
+          quaternary: true,
+          onClick: handleEdit.bind(null, record),
+          // auth: ['basic_list'],
+        },
+        {
+          label: '删除',
+          size: 'small',
+          type: 'error',
+          quaternary: true,
+          onClick: handleDelete.bind(null, record),
+        },
+      ];
+
+      return <TableAction actions={actions}></TableAction>;
     },
   });
 
@@ -145,10 +134,6 @@
 
   function addRole() {
     createModalRef.value.openModal();
-  }
-
-  function onCheckedRow(rowKeys: any[]) {
-    console.log(rowKeys);
   }
 
   function reloadTable() {
@@ -168,7 +153,6 @@
 
   function handleEdit(record: Recordable) {
     console.log('点击了编辑', record);
-    // router.push({ name: 'basic-info', params: { id: record.id } });
     editModalRef.value.showModal(record);
   }
 
@@ -209,11 +193,17 @@
     }
   }
 
-  onMounted(async () => {
-    const treeMenuList = await getMenuList();
-    expandedKeys.value = treeMenuList?.list.map((item) => item.key);
-    treeData.value = treeMenuList?.list;
-  });
+  // onMounted(async () => {
+  //   // const treeMenuList = await getMenuList();
+  //   // treeData.value = treeMenuList?.ie;
+  //   // loadDataTable(params);
+  // });
+
+  // onUnmounted(() => {
+  //   actionRef.value = null;
+  //   createModalRef.value = null;
+  //   editModalRef.value = null;
+  // });
 </script>
 
 <style lang="less" scoped></style>

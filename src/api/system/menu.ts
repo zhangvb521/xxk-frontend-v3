@@ -1,13 +1,14 @@
 import { Alova } from '@/utils/http/alova/index';
 export interface ListDate {
-  label: string;
-  key: string;
-  type: number;
-  subtitle: string;
-  openType: number;
-  auth: string;
+  id: string;
+  parentId: string;
+  menuName: string;
+  sort: string;
+  permission: string;
+  remarks: string;
+  menuType: number;
   path: string;
-  children?: ListDate[];
+  children: ListDate[];
 }
 
 /**
@@ -22,7 +23,7 @@ export function adminMenus() {
  * @param params
  */
 export function getMenuList(params?) {
-  return Alova.Get<{ list: ListDate[] }>('/menu/list', {
+  return Alova.Get<ListDate[]>('/system/menu/selectTree', {
     params,
   });
 }

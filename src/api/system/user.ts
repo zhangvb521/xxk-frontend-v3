@@ -1,10 +1,12 @@
 import { Alova } from '@/utils/http/alova/index';
+import { useFetch } from '@vueuse/core';
+import { UserInfoType } from '@/store/modules/user';
 
 /**
  * @description: 获取用户信息
  */
 export function getUserInfo() {
-  return Alova.Get<InResult>('/admin_info', {
+  return Alova.Get<UserInfoType>('/system/user/info', {
     meta: {
       isReturnNativeResponse: true,
     },
@@ -14,18 +16,9 @@ export function getUserInfo() {
 /**
  * @description: 用户登录
  */
-export function login(params) {
-  return Alova.Post<InResult>(
-    '/login',
-    {
-      params,
-    },
-    {
-      meta: {
-        isReturnNativeResponse: true,
-      },
-    }
-  );
+export async function login(params): Promise<string> {
+  const { data } = await useFetch('/api/system/user/login').post(params).text();
+  return data.value || '';
 }
 
 /**

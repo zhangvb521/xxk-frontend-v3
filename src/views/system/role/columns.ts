@@ -3,16 +3,12 @@ import { NTag } from 'naive-ui';
 
 export const columns = [
   {
-    title: 'id',
-    key: 'id',
-  },
-  {
     title: '角色名称',
-    key: 'name',
+    key: 'roleName',
   },
   {
     title: '说明',
-    key: 'explain',
+    key: 'remarks',
   },
   {
     title: '是否默认角色',
@@ -31,6 +27,6 @@ export const columns = [
   },
   {
     title: '创建时间',
-    key: 'create_date',
+    key: 'createTime',
   },
 ];

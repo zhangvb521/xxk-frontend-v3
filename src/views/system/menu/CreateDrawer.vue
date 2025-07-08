@@ -99,7 +99,7 @@
   function closeDrawer() {
     state.isDrawer = false;
   }
-
+  defineExpose({ openDrawer, closeDrawer });
   function formSubmit() {
     formRef.value.validate((errors) => {
       if (!errors) {
