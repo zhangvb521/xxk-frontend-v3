@@ -5,9 +5,9 @@ import { setupNaiveDiscreteApi, setupNaive, setupDirectives } from '@/plugins';
 import App from './App.vue';
 import router, { setupRouter } from './router';
 import { setupStore } from '@/store';
-
+let app;
 async function bootstrap() {
-  const app = createApp(App);
+  app = createApp(App);
 
   // 挂载状态管理
   setupStore(app);
@@ -29,7 +29,7 @@ async function bootstrap() {
 
   // 挂载路由
   setupRouter(app);
-
+  
   // 路由准备就绪后挂载 APP 实例
   // https://router.vuejs.org/api/interfaces/router.html#isready
   await router.isReady();
@@ -42,4 +42,15 @@ async function bootstrap() {
   app.mount('#app', true);
 }
 
-void bootstrap();
+if(window.__POWERED_BY_WUJIE__){
+  
+  window.__WUJIE_MOUNT = ()=>{
+    bootstrap();
+  }
+  window.__WUJIE_UNMOUNT = () => {
+    app.unmount();
+  };
+}else{
+  bootstrap();
+}
+

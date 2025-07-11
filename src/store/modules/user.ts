@@ -87,14 +87,14 @@ export const useUserStore = defineStore('app-user', {
     // 获取用户信息
     async getInfo() {
       const result = await getUserInfoApi();
-      console.log('getInfo', result);
+      // console.log('getInfo', result);
       if (result.menuList && result.menuList.length) {
         const permissionsList = result.menuList;
         this.setPermissions(permissionsList);
         storage.set(CURRENT_USER, result);
         this.setUserInfo(result);
       } else {
-        throw new Error('getInfo: permissionsList must be a non-null array !');
+        // throw new Error('getInfo: permissionsList must be a non-null array !');
       }
       this.setAvatar(result.avatar);
       return result;

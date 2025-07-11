@@ -79,7 +79,24 @@ export const Alova = createAlova({
       } catch (error) {
         res = response.body;
       }
-
+           // @ts-ignore
+      const Message = window.$message;
+      // @ts-ignore
+      const Modal = window.$dialog;
+     if (response.status === 511) {
+          Modal?.warning({
+            title: '提示',
+            content: '登录身份已失效，请重新登录!',
+            positiveText: '确定',
+            closable: false,
+            maskClosable: false,
+            onOk: async () => {
+              storage.clear();
+              window.location.href = LoginPath;
+            },
+          });
+        return res;
+        }
       // 是否返回原生响应头 比如：需要获取响应头时使用该属性
       if (method.meta?.isReturnNativeResponse) {
         return res;
@@ -88,17 +105,14 @@ export const Alova = createAlova({
 
       // 请根据自身情况修改数据结构
       const { message, code, result } = wrapResponse(res);
-      // @ts-ignore
-      const Message = window.$message;
-      // @ts-ignore
-      const Modal = window.$dialog;
+ 
 
       const LoginPath = PageEnum.BASE_LOGIN;
       if (ResultEnum.SUCCESS === code) {
         return result;
       }
       // 需要登录
-      if (code === 511 || response.status === 511) {
+      if (response.status === 511) {
         Modal?.warning({
           title: '提示',
           content: '登录身份已失效，请重新登录!',

@@ -18,15 +18,27 @@ function sortRoute(a, b) {
 }
 
 routeModuleList.sort(sortRoute);
-
-export const RootRoute: RouteRecordRaw = {
-  path: '/',
-  name: 'Root',
-  redirect: PageEnum.BASE_HOME,
-  meta: {
-    title: 'Root',
-  },
-};
+let RootRoute: RouteRecordRaw;
+if (window.__POWERED_BY_WUJIE__) {
+// 如若是无界主应用借入，不展示自己的首页和菜单
+  RootRoute = {
+    path:'/',
+    meta:{
+      title:'Root'
+    },
+    component: ()=>import('@/layout/parentLayout.vue')
+  }
+} else{
+   RootRoute = {
+      path: '/',
+      name: 'Root',
+      redirect: PageEnum.BASE_HOME,
+      
+      meta: {
+        title: 'Root',
+      },
+  };
+}
 
 export const LoginRoute: RouteRecordRaw = {
   path: '/login',
