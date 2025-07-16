@@ -1,15 +1,15 @@
-import { createAlova } from 'alova';
-import VueHook from 'alova/vue';
-import adapterFetch from 'alova/fetch';
-import { createAlovaMockAdapter } from '@alova/mock';
-import { isString } from 'lodash-es';
-import mocks from './mocks';
-import { useUser } from '@/store/modules/user';
-import { storage } from '@/utils/Storage';
-import { useGlobSetting } from '@/hooks/setting';
-import { PageEnum } from '@/enums/pageEnum';
-import { ResultEnum } from '@/enums/httpEnum';
-import { isUrl } from '@/utils';
+import { ResultEnum } from "@/enums/httpEnum";
+import { PageEnum } from "@/enums/pageEnum";
+import { useGlobSetting } from "@/hooks/setting";
+import { useUser } from "@/store/modules/user";
+import { isUrl } from "@/utils";
+import { storage } from "@/utils/Storage";
+import { createAlovaMockAdapter } from "@alova/mock";
+import { createAlova } from "alova";
+import adapterFetch from "alova/fetch";
+import VueHook from "alova/vue";
+import { isString } from "lodash-es";
+import mocks from "./mocks";
 
 const { useMock, apiUrl, urlPrefix, loggerMock } = useGlobSetting();
 
@@ -29,8 +29,8 @@ const mockAdapter = createAlovaMockAdapter([...mocks], {
   // },
   mockRequestLogger: loggerMock,
   onMockError(error, currentMethod) {
-    console.error('🚀 ~ onMockError ~ currentMethod:', currentMethod);
-    console.error('🚀 ~ onMockError ~ error:', error);
+    console.error("🚀 ~ onMockError ~ currentMethod:", currentMethod);
+    console.error("🚀 ~ onMockError ~ error:", error);
   },
 });
 
@@ -52,15 +52,15 @@ export const Alova = createAlova({
   //   HEAD: 60 * 10 * 1000 // 统一设置HEAD请求的缓存模式
   // },
   // 在开发环境开启缓存命中日志
-  cacheLogger: process.env.NODE_ENV === 'development',
+  cacheLogger: process.env.NODE_ENV === "development",
   requestAdapter: mockAdapter,
   beforeRequest(method) {
     const userStore = useUser();
     const token = userStore.getToken;
     // 添加 token 到请求头
     if (!method.meta?.ignoreToken && token) {
-      method.config.headers['token'] = token;
-      method.config.headers['Authorization'] = token;
+      method.config.headers["token"] = token;
+      method.config.headers["Authorization"] = token;
     }
     // 处理 api 请求前缀
     const isUrlStr = isUrl(method.url as string);
@@ -79,24 +79,25 @@ export const Alova = createAlova({
       } catch (error) {
         res = response.body;
       }
-           // @ts-ignore
+      // @ts-ignore
       const Message = window.$message;
+
       // @ts-ignore
       const Modal = window.$dialog;
-     if (response.status === 511) {
-          Modal?.warning({
-            title: '提示',
-            content: '登录身份已失效，请重新登录!',
-            positiveText: '确定',
-            closable: false,
-            maskClosable: false,
-            onOk: async () => {
-              storage.clear();
-              window.location.href = LoginPath;
-            },
-          });
+      if (response.status === 511) {
+        Modal?.warning({
+          title: "提示",
+          content: "登录身份已失效，请重新登录!",
+          positiveText: "确定",
+          closable: false,
+          maskClosable: false,
+          onPositiveClick: async () => {
+            storage.clear();
+            window.location.href = PageEnum.BASE_LOGIN;
+          },
+        });
         return res;
-        }
+      }
       // 是否返回原生响应头 比如：需要获取响应头时使用该属性
       if (method.meta?.isReturnNativeResponse) {
         return res;
@@ -105,7 +106,6 @@ export const Alova = createAlova({
 
       // 请根据自身情况修改数据结构
       const { message, code, result } = wrapResponse(res);
- 
 
       const LoginPath = PageEnum.BASE_LOGIN;
       if (ResultEnum.SUCCESS === code) {
@@ -114,12 +114,12 @@ export const Alova = createAlova({
       // 需要登录
       if (response.status === 511) {
         Modal?.warning({
-          title: '提示',
-          content: '登录身份已失效，请重新登录!',
-          okText: '确定',
+          title: "提示",
+          content: "登录身份已失效，请重新登录!",
+          okText: "确定",
           closable: false,
           maskClosable: false,
-          onOk: async () => {
+          onPositiveClicknOk: async () => {
             storage.clear();
             window.location.href = LoginPath;
           },

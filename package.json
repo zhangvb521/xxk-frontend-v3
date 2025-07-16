@@ -43,7 +43,9 @@
     "qs": "^6.13.0",
     "vue": "^3.5.17",
     "vue-router": "^4.5.1",
-    "vue-types": "^6.0.0"
+    "vue-types": "^6.0.0",
+    "wujie": "^1.0.28",
+    "wujie-vue3": "^1.0.28"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.8.1",

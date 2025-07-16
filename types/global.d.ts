@@ -99,6 +99,12 @@ declare global {
       [elem: string]: any;
     }
   }
+
+  interface Window{
+    __POWERED_BY_WUJIE__: boolean;
+    __WUJIE_MOUNT: () => void;
+    __WUJIE_UNMOUNT: () => void;
+  }
 }
 
 declare module 'vue' {

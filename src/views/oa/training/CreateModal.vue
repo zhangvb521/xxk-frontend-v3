@@ -12,30 +12,39 @@ import { basicModal, useModal } from "@/components/Modal";
 
 const schemas: FormSchema[] = [
   {
-    field: "name",
+    field: "topic",
     component: "NInput",
-    label: "角色名称",
+    label: "培训主题",
     componentProps: {
-      placeholder: "请输入角色名称",
+      placeholder: "请输入培训主题",
     },
-    rules: [{ required: true, message: "请输入角色名称", trigger: ["blur"] }],
+    rules: [{ required: true, message: "请输入培训主题", trigger: ["blur"] }],
   },
   {
-    field: "explain",
+    field: "content",
     component: "NInput",
-    label: "角色说明",
+    label: "培训内容",
     componentProps: {
       type: "textarea",
       placeholder: "请输入角色角色说明",
     },
   },
   {
-    field: "isDefault",
+    field: "location",
     component: "NSwitch",
-    label: "默认角色",
+    label: "培训地点",
     componentProps: {},
   },
 ];
+
+// 表单验证规则
+const rules = {
+  topic: [{ required: true, message: "请输入培训主题", trigger: "blur" }],
+  content: [{ required: true, message: "请输入培训内容", trigger: "blur" }],
+  trainingTime: [{ required: true, message: "请选择培训时间", trigger: "change" }],
+  location: [{ required: true, message: "请输入培训地点", trigger: "blur" }],
+  participants: [{ required: true, message: "请选择参与人员", trigger: "change" }],
+};
 
 const [registerForm, { submit }] = useForm({
   gridProps: { cols: 1 },

@@ -50,6 +50,11 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       host: true,
       port: VITE_PORT,
       proxy: createProxy(VITE_PROXY),
+      headers:{
+        "access-control-allow-origin":'*',
+        "access-control-allow-methods":'GET,POST,PUT,DELETE,PATCH,OPTIONS',
+        "access-control-allow-headers":'Content-Type, Authorization, x-id, Content-Length, X-Requested-With',
+      }
     },
     optimizeDeps: {
       include: [],

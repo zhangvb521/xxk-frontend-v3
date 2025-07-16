@@ -7,6 +7,7 @@
 </template>
 
 <script lang="ts" setup>
+import { nextTick } from "vue";
 import { FormSchema, useForm } from "@/components/Form";
 import { basicModal, useModal } from "@/components/Modal";
 
@@ -37,7 +38,7 @@ const schemas: FormSchema[] = [
   },
 ];
 
-const [registerForm, { submit }] = useForm({
+const [registerForm, { submit, setFieldsValue }] = useForm({
   gridProps: { cols: 1 },
   collapsedRows: 3,
   labelWidth: 80,
@@ -48,9 +49,16 @@ const [registerForm, { submit }] = useForm({
 });
 
 const [modalRegister, { openModal, closeModal, setSubLoading }] = useModal({
-  title: "新增培训记录",
+  title: "编辑角色",
   subBtuText: "保存",
 });
+
+function showModal(record: any) {
+  openModal();
+  nextTick(() => {
+    record && setFieldsValue({ ...record });
+  });
+}
 
 async function okModal() {
   const formRes = await submit();
@@ -63,6 +71,6 @@ async function okModal() {
 }
 
 defineExpose({
-  openModal,
+  showModal,
 });
 </script>
